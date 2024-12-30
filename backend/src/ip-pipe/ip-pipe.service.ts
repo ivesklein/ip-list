@@ -64,6 +64,12 @@ export class IpPipeService {
         }));
 
         report.forEach(async (line) => {
+
+            // check if data is corrupted
+            if (line.abuseConfidenceScore === undefined) {
+                return;
+            }
+
             //check if the registry already exists to ignore it, comparing each field
             const exists = dbIps.find((entity) => {
                 return entity.ip === line.ip && +entity.date === +line.date && entity.method === line.method && entity.endpoint === line.url && entity.status === line.status && entity.userAgent === line.userAgent;

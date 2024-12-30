@@ -31,7 +31,8 @@ export class AbuseipdbApiService {
             };
 
         } catch (error) {
-            throw new Error(error);
+            console.error(`https://api.abuseipdb.com/api/v2/check?ipAddress=${ip}`);
+            return {};
         }
     }
 
