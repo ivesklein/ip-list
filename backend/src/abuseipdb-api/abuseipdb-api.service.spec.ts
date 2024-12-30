@@ -15,4 +15,13 @@ describe('AbuseipdbApiService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should get abuse data', async () => {
+    const ip = '118.25.6.39';
+    const abuseData = await AbuseipdbApiService.getAbuseData(ip);
+    expect(abuseData).toHaveProperty('ip');
+    expect(abuseData).toHaveProperty('abuseConfidenceScore');
+    expect(abuseData).toHaveProperty('country');
+    expect(abuseData).toHaveProperty('usageType');
+  });
 });
