@@ -14,14 +14,22 @@ export class DataParserService {
         const match = data.match(regex);
         if (match) {
             const date = DataParserService.parseDate(match[2]);
-            return [match[1], date, match[3].split(' ')[0], match[3].split(' ')[1], match[4], match[7]];
+            // check if the params are not empty
+            const ip = match[1];
+            const method = match[3].split(' ')[0] ? match[3].split(' ')[0] : '-';
+            const url = match[3].split(' ')[1] ? match[3].split(' ')[1] : '-';
+            const status = match[4] ? match[4] : '-';
+            const userAgent = match[7] ? match[7] : '-';
+
+
+            return [ip, date, method, url, status, userAgent];
         }else{
             //try to matsh only the ip and date, the rest of the data put it in the user-agent
             const regex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) - - \[(.*?)\] "(.*?)"/;
             const match = data.match(regex);
             if (match) {
                 const date = new Date(match[2]);
-                return [match[1], date, "", "", "", match[3]];
+                return [match[1], date, "-", "-", "-", match[3]];
             }
         }
         return [];
