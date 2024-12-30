@@ -15,24 +15,44 @@ export class IpPipeService {
     public async getIps() {
         const input = InputDummyService.getLastLog();
         const data = input.map((line) => DataParserService.parseData(line));
+
+        const dbIps = await this.ipEntityService.findAll();
+
         const report = await Promise.all(data.map(async (line) => {
-          const abuseData = await AbuseipdbApiService.getAbuseData(line[0]);
-          return {
-            ip: line[0],
-            date: line[1],
-            method: line[2],
-            url: line[3],
-            status: line[4],
-            userAgent: line[5],
-            abuseConfidenceScore: abuseData.abuseConfidenceScore,
-            country: abuseData.country,
-            usageType: abuseData.usageType
-          };
+
+            //check if ip already exist to copy the abuse data
+            const exists = dbIps.find((entity) => entity.ip === line[0]);
+            if (exists) {
+                return {
+                    ip: line[0],
+                    date: line[1],
+                    method: line[2],
+                    url: line[3],
+                    status: line[4],
+                    userAgent: line[5],
+                    abuseConfidenceScore: exists.abuseScore,
+                    country: exists.country,
+                    usageType: exists.usageType
+                };
+            } else {
+                const abuseData = await AbuseipdbApiService.getAbuseData(line[0]);
+                return {
+                    ip: line[0],
+                    date: line[1],
+                    method: line[2],
+                    url: line[3],
+                    status: line[4],
+                    userAgent: line[5],
+                    abuseConfidenceScore: abuseData.abuseConfidenceScore,
+                    country: abuseData.country,
+                    usageType: abuseData.usageType
+                };
+            }
         }));
 
         report.forEach(async (line) => {
             //check if the registry already exists to ignore it, comparing each field
-            const exists = (await this.ipEntityService.findAll()).find((entity) => {
+            const exists = dbIps.find((entity) => {
                 return entity.ip === line.ip && +entity.date === +line.date && entity.method === line.method && entity.endpoint === line.url && entity.status === line.status && entity.userAgent === line.userAgent;
             });
             if (exists) {
@@ -51,8 +71,8 @@ export class IpPipeService {
                 abuseScore: line.abuseConfidenceScore,
                 country: line.country,
                 usageType: line.usageType,
-                // abuseScore: <=5 -> Confiables, >=95 -> Maliciosas , other -> Sospechosas
-                category: line.abuseConfidenceScore <= 5 ? 'Confiables' : line.abuseConfidenceScore >= 95 ? 'Maliciosas' : 'Sospechosas'
+                // abuseScore: <=5 -> Confiable, >=95 -> Maliciosa , other -> Sospechosa
+                category: line.abuseConfidenceScore <= 5 ? 'Confiable' : line.abuseConfidenceScore >= 95 ? 'Maliciosa' : 'Sospechosa'
             });
         });
 
