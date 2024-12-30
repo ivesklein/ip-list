@@ -11,6 +11,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { IpEntity } from './ip-entity/ip-entity';
 import { IpEntityModule } from './ip-entity/ip-entity.module';
 import { IpPipeModule } from './ip-pipe/ip-pipe.module';
+import { InputNginxService } from './input-nginx/input-nginx.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { IpPipeService } from './ip-pipe/ip-pipe.service';
 
 @Module({
   imports: [
@@ -27,6 +30,6 @@ import { IpPipeModule } from './ip-pipe/ip-pipe.module';
     IpPipeModule,
   ],
   controllers: [AppController],
-  providers: [AppService, InputDummyService, DataParserService, AbuseipdbApiService, SaveDataService, AlertsService],
+  providers: [AppService, InputDummyService, DataParserService, AbuseipdbApiService, SaveDataService, AlertsService, InputNginxService, IpPipeService],
 })
 export class AppModule {}

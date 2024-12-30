@@ -3,6 +3,7 @@ import { InputDummyService } from '../input-dummy/input-dummy.service';
 import { DataParserService } from '../data-parser/data-parser.service';
 import { AbuseipdbApiService } from '../abuseipdb-api/abuseipdb-api.service';
 import { IpEntityService } from 'src/ip-entity/ip-entity.service';
+import { InputNginxService } from 'src/input-nginx/input-nginx.service';
 
 @Injectable()
 export class IpPipeService {
@@ -13,7 +14,19 @@ export class IpPipeService {
         * @return {null}
         */
     public async getIps() {
-        const input = InputDummyService.getLastLog();
+        // check if the environment variable INPUT_METHOD is set
+        if (!process.env.INPUT_METHOD) {
+            console.error('Missing INPUT_METHOD environment variable');
+            return;
+        }
+        // read INPUT_METHOD from env
+        let input = [];
+        if(process.env.INPUT_METHOD === 'dummy') {
+            input = InputDummyService.getLastLog();
+        } else if(process.env.INPUT_METHOD === 'nginx') {
+            input = InputNginxService.getLastLog();
+        }
+
         const data = input.map((line) => DataParserService.parseData(line));
 
         const dbIps = await this.ipEntityService.findAll();
