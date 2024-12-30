@@ -14,7 +14,7 @@
 
 ### Service
 - Create a service that runs the `/backend/dist/main.js` file
-- Serve the static files in `/forntend/dist/`
+- Serve the static files in `/frontend/dist/`
 
 ## Integrtation
 - To integrate this service with a third party it could be made in different ways:
