@@ -29,7 +29,7 @@ export class IpPipeService {
 
         let data = input.map((line) => DataParserService.parseData(line));
         data = data.filter((line) => {
-            if(line['ip'] !== undefined) {
+            if(line[0] !== undefined) {
                 return true;
             }else {
                 console.log('Error parsing line: ', line);
