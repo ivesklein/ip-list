@@ -28,7 +28,14 @@ export class IpPipeService {
         }
 
         let data = input.map((line) => DataParserService.parseData(line));
-        data = data.filter((line) => line['ip'] !== undefined);
+        data = data.filter((line) => {
+            if(line['ip'] !== undefined) {
+                return true;
+            }else {
+                console.log('Error parsing line: ', line);
+                return false;
+            }
+        });
 
         const dbIps = await this.ipEntityService.findAll();
 
