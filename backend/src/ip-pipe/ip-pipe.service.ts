@@ -27,7 +27,8 @@ export class IpPipeService {
             input = InputNginxService.getLastLog();
         }
 
-        const data = input.map((line) => DataParserService.parseData(line));
+        let data = input.map((line) => DataParserService.parseData(line));
+        data = data.filter((line) => line['ip'] !== undefined);
 
         const dbIps = await this.ipEntityService.findAll();
 
