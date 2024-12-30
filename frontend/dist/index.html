@@ -4,9 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ip List</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .category-confiable {
+            background-color: green;
+        }
+        .category-sospechosa {
+            background-color: rgb(148, 148, 0);
+        }
+        .category-maliciosa {
+            background-color: rgb(133, 0, 0);
+        }
+        .category-icon {
+            color: white;
+            padding: 0 0.5em 0 0.5em;
+            border-radius: 50%;
+            font-size: 2em;
+        }
+        .ip-address {
+            font-size: 1.5em; /* Make the IP address bigger */
+        }
+        .map-container {
+            width: 50%;
+            height: 100%;
+        }
+        .list-container {
+            width: 50%;
+            height: 100%;
+            background-color: #2d3748; /* Background color for the list */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+        .btn-confiables.active {
+            background-color: green;
+        }
+        .btn-sospechosas.active {
+            background-color: rgb(148, 148, 0);
+        }
+        .btn-maliciosas.active {
+            background-color: rgb(133, 0, 0);
+        }
+    </style>
 </head>
-<body>
+<body class="h-screen">
     
+    <div class="flex justify-between items-center py-5 px-6 bg-gray-900">
+        <!-- category filter -->
+        <div class="flex gap-x-4">
+            <button class="text-sm font-semibold text-gray-100 bg-gray-800 py-2 px-4 rounded-lg filter-button btn-confiables" data-category="Confiable">Confiables</button>
+            <button class="text-sm font-semibold text-gray-100 bg-gray-800 py-2 px-4 rounded-lg filter-button btn-sospechosas" data-category="Sospechosa">Sospechosas</button>
+            <button class="text-sm font-semibold text-gray-100 bg-gray-800 py-2 px-4 rounded-lg filter-button btn-maliciosas" data-category="Maliciosa">Maliciosas</button>
+        </div>
+
+        <!-- search bar -->
+        <div class="flex gap-x-4">
+            <input id="find-input" type="text" class="text-sm font-semibold text-gray-100 bg-gray-800 py-2 px-4 rounded-lg" placeholder="Buscar...">
+            <button id="find-button" class="text-sm font-semibold text-gray-100 bg-gray-800 py-2 px-4 rounded-lg">Buscar</button>
+        </div>
+    </div>
+
+    <div class="flex h-full">
+        <!-- list of ip addresses -->
+        <div class="list-container">
+            <ul role="list" class="divide-y divide-gray-500" id="ip-list">
+                <li class="flex gap-x-6 py-1 category-confiable">
+                    <div class="flex min-w-0 gap-x-4 items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-shield-alt category-icon"></i>
+                        </div>
+                        <div class="min-w-0 flex-auto">
+                            <p class="text-sm font-semibold text-gray-100 inline">2023-10-01 10:23:40</p>
+                            <p class="text-sm font-semibold text-gray-100 inline ip-address">192.168.0.1</p>
+                            <p class="text-sm text-gray-200 inline ml-4">(USA)</p>
+                            <p class="text-sm text-gray-200 inline ml-4">http://example.com</p>
+                        </div>
+                    </div>
+                </li>
+                <li class="flex gap-x-6 py-1 category-sospechosa">
+                    <div class="flex min-w-0 gap-x-4 items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle category-icon"></i>
+                        </div>
+                        <div class="min-w-0 flex-auto">
+                            <p class="text-sm font-semibold text-gray-100 inline">2023-10-01 10:23:40</p>
+                            <p class="text-sm font-semibold text-gray-100 inline ip-address">10.0.0.1</p>
+                            <p class="text-sm text-gray-200 inline ml-4">(Canada)</p>
+                            <p class="text-sm text-gray-200 inline ml-4">http://example.org</p>
+                        </div>
+                    </div>
+                </li>
+                <li class="flex gap-x-6 py-1 category-maliciosa">
+                    <div class="flex min-w-0 gap-x-4 items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-times-circle category-icon"></i>
+                        </div>
+                        <div class="min-w-0 flex-auto">
+                            <p class="text-sm font-semibold text-gray-100 inline">2023-10-01 10:23:40</p>
+                            <p class="text-sm font-semibold text-gray-100 inline ip-address">172.16.0.1</p>
+                            <p class="text-sm text-gray-200 inline ml-4">(UK)</p>
+                            <p class="text-sm text-gray-200 inline ml-4">http://example.net</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- map container -->
+        <div id="map" class="map-container"></div>
+    </div>
+
+    <!-- item template -->
+    <template id="item-template">
+        <li class="flex gap-x-6 py-1 t-category">
+            <div class="flex min-w-0 gap-x-4 items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas category-icon t-icon"></i>
+                </div>
+                <div class="min-w-0 flex-auto">
+                    <p class="text-sm font-semibold text-gray-100 inline t-date">2023-10-01 10:23:40</p>
+                    <p class="text-sm font-semibold text-gray-100 inline ip-address t-ip">192.168.0.1</p>
+                    <p class="text-sm text-gray-200 inline ml-4 t-country">(USA)</p>
+                    <p class="text-sm text-gray-200 inline ml-4 t-url">http://example.com</p>
+                </div>
+            </div>
+        </li>
+    </template>
+
     <script src="main.js"></script>
 </body>
 </html>

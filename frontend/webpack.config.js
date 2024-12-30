@@ -1,6 +1,10 @@
 import path, { resolve } from 'path';
 import { fileURLToPath } from 'url';
 import webpack from 'webpack';
+import dotenv from 'dotenv';
+
+// load environment variables
+dotenv.config();
 
 // check environment variables
 if (!process.env.API_URL) {
@@ -22,4 +26,12 @@ export default {
             API_URL: JSON.stringify(process.env.API_URL),
         }),
     ],
+    module: {
+        rules: [
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader'],
+            },
+        ],
+    },
 } 

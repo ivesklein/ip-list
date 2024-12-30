@@ -1,3 +1,4 @@
 .env
 dist/*.js
+dist/*.png
 node_modules/

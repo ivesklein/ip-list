@@ -5,14 +5,25 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "webpack",
+    "build": "webpack & npx tailwindcss build -o ./dist/styles.css",
+    "watch": "webpack --watch & npx tailwindcss build -o ./dist/styles.css --watch",
+    "watchcss": "npx tailwindcss build -o ./dist/styles.css --watch",
+    "prod": "webpack --mode production & npx tailwindcss build -o ./dist/styles.css --minify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ivesklein",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "tailwindcss": "^3.4.17",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "css-loader": "^7.1.2",
+    "d3": "^7.9.0",
+    "dotenv": "^16.4.7",
+    "leaflet": "^1.9.4",
+    "style-loader": "^4.0.0"
   }
 }
